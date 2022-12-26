@@ -23,4 +23,7 @@ public class Person {
 
     @Column(name = "address")
     private String address;
+
+    @Column(name = "departmentid")
+    private int departmentId;
 }

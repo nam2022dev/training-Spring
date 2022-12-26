@@ -14,4 +14,5 @@ public class PersonDTO {
     private String fullName;
     private int age;
     private String address;
+    private int departmentId;
 }

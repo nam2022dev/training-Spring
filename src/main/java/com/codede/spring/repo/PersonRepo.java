@@ -6,9 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
-import org.springframework.data.repository.query.Param;
-
-import java.util.List;
 
 public interface PersonRepo extends JpaRepository<Person, Integer>, Repository<Person, Integer> {
 
@@ -19,5 +16,5 @@ public interface PersonRepo extends JpaRepository<Person, Integer>, Repository<P
 
 //    @Query(value = "select * from person p where p.fullname ilike '%:x%'",
 //            nativeQuery = true)
-        List<Person> findByFullNameLikeIgnoreCase(String name);
+        Page<Person> findByFullNameLikeIgnoreCase(String name, Pageable pageable);
 }

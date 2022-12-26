@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
 import java.util.ArrayList;
@@ -21,32 +22,32 @@ public class PersonService {
     @Autowired
     PersonRepo personRepo;
 
+    @Transactional
     public void create(PersonDTO personDTO) {
         ModelMapper mapper = new ModelMapper();
-//        Person person = mapper.map(personDTO, Person.class);
-        Person person = new Person();
-//        person.setId(personDTO.getId());
-        person.setFullName(personDTO.getFullName());
-        person.setAge(personDTO.getAge());
-        person.setAddress(personDTO.getAddress());
-        person= personRepo.save(person);
+        Person person = mapper.map(personDTO, Person.class);
+        personRepo.save(person);
     }
 
+    @Transactional
     public void update(int id, PersonDTO personDTO) {
         Person person = personRepo.findById(id).orElseThrow(RuntimeException::new);
 
         person.setFullName(personDTO.getFullName());
         person.setAge(personDTO.getAge());
         person.setAddress(personDTO.getAddress());
+        person.setDepartmentId(personDTO.getDepartmentId());
 
         personRepo.save(person);
 
     }
 
+    @Transactional
     public PersonDTO getById(int id) {
         Person person =personRepo.findById(id).orElseThrow(NoResultException::new);
         return new ModelMapper().map(person, PersonDTO.class);
     }
+    @Transactional
     public PageDTO<PersonDTO> getAll() {
         List<PersonDTO> list = new ArrayList<>();
         PageDTO<PersonDTO> pageDTO = new PageDTO<>();
@@ -66,11 +67,11 @@ public class PersonService {
         personRepo.deleteById(id);
     }
 
+    @Transactional
     public PageDTO<PersonDTO> search(String fullName, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
 
-        List<Person> pageRS = personRepo.findByFullNameLikeIgnoreCase("%"+fullName+"%");
-        System.out.println("sdss "+ pageRS +pageable);
+        Page<Person> pageRS = personRepo.findByFullNameLikeIgnoreCase("%"+fullName+"%", pageable);
 
         PageDTO<PersonDTO> pageDTO = new PageDTO<>();
 //        pageDTO.setTotalPage(pageRS.getTotalPages());

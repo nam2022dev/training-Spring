@@ -1,0 +1,3 @@
+@NAME(SAVE_DEPARTMENT)
+  INSERT INTO department(id,name, location, country)
+    VALUES (:id, :name, :location, :country)

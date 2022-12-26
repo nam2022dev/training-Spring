@@ -6,11 +6,7 @@ import com.codede.spring.DTO.ResponseDTO;
 import com.codede.spring.entity.Person;
 import com.codede.spring.repo.PersonRepo;
 import com.codede.spring.service.PersonService;
-import lombok.Builder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -64,6 +60,5 @@ public class PersonController {
         System.out.println(pageRS);
 
         return ResponseDTO.<PageDTO<PersonDTO>>builder().status(200).data(pageRS).build();
-
     }
 }
