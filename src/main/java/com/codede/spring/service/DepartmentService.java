@@ -35,47 +35,48 @@ public class DepartmentService {
     public void create(DepartmentDTO departmentDTO) {
         ModelMapper mapper = new ModelMapper();
         Department department = mapper.map(departmentDTO, Department.class);
-        departmentRepo.save(department);
+        departmentDAO.save(department);
     }
 
     @Transactional
     public void update(int id, DepartmentDTO departmentDTO) {
-        Department department = departmentRepo.findById(id).orElseThrow(RuntimeException::new);
+        Department department = departmentDAO.findById(departmentDTO.getId());
 
         department.setName(departmentDTO.getName());
         department.setLocation(departmentDTO.getLocation());
         department.setCountry(departmentDTO.getCountry());
 
-        departmentRepo.save(department);
+        departmentDAO.save(department);
     }
 
+    @Transactional
     public DepartmentDTO getById(int id) {
         Department department = departmentDAO.findById(id);
         return new ModelMapper().map(department, DepartmentDTO.class);
     }
 
     @Transactional
-    public PageDTO<DepartmentDTO> getAll() {
+    public List<DepartmentDTO> getAll(int page) {
         List<DepartmentDTO> list = new ArrayList<>();
-        PageDTO<DepartmentDTO> pageDTO = new PageDTO<>();
 
-        for (Department d : departmentDAO.findAll()
+        for (Department d : departmentDAO.findAll(page)
         ) {
             ModelMapper mapper = new ModelMapper();
             DepartmentDTO departmentDTO = mapper.map(d, DepartmentDTO.class);
             list.add(departmentDTO);
         }
-        pageDTO.setContents(list);
-        return pageDTO;
-    }
-
-    public void delete(int id) {
-        departmentRepo.deleteById(id);
+        return list;
     }
 
     @Transactional
-    public PageDTO<Department> searchByName(String name) {
-        return departmentDAO.searchByName(name);
+    public void deleteById(int id) {
+        Department department1 = departmentDAO.findById(id);
+        departmentDAO.delete(department1);
+    }
+
+    @Transactional
+    public List<Department> searchByName(String name, int page) {
+        return departmentDAO.searchByName(name, page);
 
     }
 }

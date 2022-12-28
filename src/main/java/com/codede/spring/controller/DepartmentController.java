@@ -10,6 +10,8 @@ import com.codede.spring.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/department")
 public class DepartmentController {
@@ -32,22 +34,28 @@ public class DepartmentController {
         return ResponseDTO.<DepartmentDTO>builder().status(200).data(departmentDTO).build();
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseDTO<Void> delete(@PathVariable("id") int id) {
+        departmentService.deleteById(id);
+        return ResponseDTO.<Void>builder().status(200).build();
+    }
+
     @GetMapping("/get/{id}")
-    public DepartmentDTO getById(@PathVariable("id") int id) {
+    public ResponseDTO<DepartmentDTO> getById(@PathVariable("id") int id) {
 
-        return departmentService.getById(id);
+        return ResponseDTO.<DepartmentDTO>builder().status(200).data(departmentService.getById(id)).build();
     }
 
-    @GetMapping("/get-all")
-    public ResponseDTO<PageDTO<DepartmentDTO>> getAll() {
-        return ResponseDTO.<PageDTO<DepartmentDTO>>builder().status(200).data(departmentService.getAll()).build();
+    @GetMapping("/get-all/{page}")
+    public ResponseDTO<List<DepartmentDTO>> getAll(@PathVariable("page") int page) {
+        return ResponseDTO.<List<DepartmentDTO>>builder().status(200).data(departmentService.getAll(page)).build();
     }
 
-    @GetMapping("/search")
-    public ResponseDTO<PageDTO<Department>> searchByName(@RequestParam("name") String name) {
-        return ResponseDTO.<PageDTO<Department>>builder()
+    @GetMapping("/search/{page}")
+    public ResponseDTO<List<Department>> searchByName(@RequestParam("name") String name, @PathVariable("page") int page) {
+        return ResponseDTO.<List<Department>>builder()
                 .status(200)
-                .data(departmentService.searchByName(name))
+                .data(departmentService.searchByName(name, page))
                 .build();
     }
 }

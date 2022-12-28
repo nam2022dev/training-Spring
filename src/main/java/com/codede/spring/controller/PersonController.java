@@ -7,7 +7,10 @@ import com.codede.spring.entity.Person;
 import com.codede.spring.repo.PersonRepo;
 import com.codede.spring.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/person")
@@ -31,9 +34,10 @@ public class PersonController {
         return ResponseDTO.<PersonDTO>builder().status(200).data(personDTO).build();
     }
 
-    @GetMapping("/get-all")
-    public ResponseDTO<PageDTO<PersonDTO>> getAll() {
-        return ResponseDTO.<PageDTO<PersonDTO>>builder().status(200).data(personService.getAll()).build();
+    @GetMapping("/get-all/{page}")
+    @Transactional
+    public ResponseDTO<PageDTO<PersonDTO>> getAll(@PathVariable("page") int page) {
+        return ResponseDTO.<PageDTO<PersonDTO>>builder().status(200).data(personService.getAll(page)).build();
     }
 
     @PostMapping("/edit/{id}")
@@ -48,17 +52,11 @@ public class PersonController {
         return ResponseDTO.<Void>builder().status(200).build();
     }
 
-    @GetMapping("/search")
-    public ResponseDTO<PageDTO<PersonDTO>> search(@RequestParam(name = "name", required = false) String name,
-                                                  @RequestParam(name = "size", required = false) Integer size,
-                                                  @RequestParam(name = "page", required = false) Integer page) {
-        size = size == null ? 10 : size;
-        page = page == null ? 0 : page;
-//        name = name == null ? "%%" : name;
-
-        PageDTO<PersonDTO> pageRS = personService.search(name, page, size);
-        System.out.println(pageRS);
-
-        return ResponseDTO.<PageDTO<PersonDTO>>builder().status(200).data(pageRS).build();
+    @GetMapping("/search/{page}")
+    public ResponseDTO<List<Person>> searchByName(@RequestParam("name") String name, @PathVariable("page") int page) {
+        return ResponseDTO.<List<Person>>builder()
+                .status(200)
+                .data(personService.searchByName(name, page))
+                .build();
     }
 }

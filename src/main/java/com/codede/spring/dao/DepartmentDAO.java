@@ -1,7 +1,5 @@
 package com.codede.spring.dao;
 
-import com.codede.spring.DTO.DepartmentDTO;
-import com.codede.spring.DTO.PageDTO;
 import com.codede.spring.entity.Department;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,36 +14,71 @@ import java.util.List;
 public class DepartmentDAO {
     @PersistenceContext
     private EntityManager entityManager;
+
     public void persist(final Department department) {
         entityManager.persist(department);
     }
+
+//    public Department findById(final int id) {
+//        return entityManager.find(Department.class, id);
+//    }
+
     public Department findById(final int id) {
-        return entityManager.find(Department.class, id);
+        Query query = entityManager.createNativeQuery("SELECT * FROM department WHERE id = :id", Department.class);
+        query.setParameter("id",id);
+
+        return (Department) query.getSingleResult();
     }
+
+//    public void delete(final Department department) {
+//        entityManager.remove(department);
+//    }
+
     public void delete(final Department department) {
-        entityManager.remove(department);
+        Query query = entityManager.createNativeQuery("DELETE FROM department where id = :id");
+        query.setParameter("id", department.getId());
+        query.executeUpdate();
     }
-    public List<Department> findAll() {
+
+//    public void save(final Department department) {
+//        entityManager.persist(department);
+//    }
+
+    public void save(final Department department) {
         try {
-            Query query = entityManager.createNativeQuery("SELECT * FROM department", Department.class);
-            List<Department> departments = query.getResultList();
-            return departments;
-        }catch (Exception e){
+            Query query = entityManager.createNativeQuery("INSERT INTO department(name, location, country) VALUES(:name, :location, :country)");
+            query.setParameter("name", department.getName());
+            query.setParameter("location", department.getLocation());
+            query.setParameter("country", department.getCountry());
+            query.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public List<Department> findAll(int page) {
+        try {
+            Query query = entityManager.createNativeQuery("SELECT * FROM department LIMIT 10 OFFSET (:page -1)*10", Department.class);
+            query.setParameter("page", page);
+            return query.getResultList();
+        } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
     }
 
-    public PageDTO<Department> searchByName(final String named) {
+    public List<Department> searchByName(final String named, int page) {
         try {
-            Query query = entityManager.createNativeQuery("select * from department d where d.name like "+named);
+            Query query = entityManager.createNativeQuery("select * from department d where d.name like concat('%', :named, '%') LIMIT 10 OFFSET (:page -1)*10", Department.class);
+            query.setParameter("named", named);
+            query.setParameter("page", page);
+
             List<Department> departments = query.getResultList();
-            PageDTO<Department> pageDTO = new PageDTO<>();
-            pageDTO.setContents(departments);
-            return pageDTO;
+            return departments;
         } catch (Exception e) {
             e.printStackTrace();
-            return new PageDTO<>();
+            return new ArrayList<>();
+
         }
     }
 }
