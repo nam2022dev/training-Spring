@@ -12,12 +12,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class PersonService {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     PersonRepo personRepo;
@@ -31,7 +36,7 @@ public class PersonService {
 
     @Transactional
     public void update(int id, PersonDTO personDTO) {
-        Person person = personRepo.findById(id).orElseThrow(RuntimeException::new);
+        Person person = personRepo.findById(personDTO.getId()).orElseThrow(NoResultException::new);
 
         person.setFullName(personDTO.getFullName());
         person.setAge(personDTO.getAge());

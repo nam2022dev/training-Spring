@@ -2,27 +2,31 @@ package com.codede.spring.service;
 
 import com.codede.spring.DTO.DepartmentDTO;
 import com.codede.spring.DTO.PageDTO;
-import com.codede.spring.DTO.PersonDTO;
+import com.codede.spring.dao.DepartmentDAO;
 import com.codede.spring.entity.Department;
-import com.codede.spring.entity.Person;
 import com.codede.spring.repo.DepartmentRepo;
 import com.codede.spring.repo.PersonRepo;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class DepartmentService {
+
+    @PersistenceContext
+    private EntityManager entityManager;
     @Autowired
     DepartmentRepo departmentRepo;
+
+    @Autowired
+    DepartmentDAO departmentDAO;
 
     @Autowired
     PersonRepo personRepo;
@@ -46,7 +50,7 @@ public class DepartmentService {
     }
 
     public DepartmentDTO getById(int id) {
-        Department department =departmentRepo.findById(id).orElseThrow(NoResultException::new);
+        Department department = departmentDAO.findById(id);
         return new ModelMapper().map(department, DepartmentDTO.class);
     }
 
@@ -54,9 +58,8 @@ public class DepartmentService {
     public PageDTO<DepartmentDTO> getAll() {
         List<DepartmentDTO> list = new ArrayList<>();
         PageDTO<DepartmentDTO> pageDTO = new PageDTO<>();
-        Department department = new Department();
 
-        for (Department d : departmentRepo.findAll()
+        for (Department d : departmentDAO.findAll()
         ) {
             ModelMapper mapper = new ModelMapper();
             DepartmentDTO departmentDTO = mapper.map(d, DepartmentDTO.class);
@@ -70,5 +73,9 @@ public class DepartmentService {
         departmentRepo.deleteById(id);
     }
 
+    @Transactional
+    public PageDTO<Department> searchByName(String name) {
+        return departmentDAO.searchByName(name);
 
+    }
 }
