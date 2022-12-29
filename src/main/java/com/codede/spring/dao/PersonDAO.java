@@ -1,8 +1,6 @@
 package com.codede.spring.dao;
 
-import com.codede.spring.entity.Department;
 import com.codede.spring.entity.Person;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +20,6 @@ public class PersonDAO {
         entityManager.persist(person);
     }
 
-//    public Person findById(final int id) {
-//        return entityManager.find(Person.class, id);
-//    }
-
     public Person findById(final int id) {
         Query query = entityManager.createNativeQuery("SELECT * FROM person WHERE id = :id", Person.class);
         query.setParameter("id", id);
@@ -34,19 +28,11 @@ public class PersonDAO {
         return (Person) query.getSingleResult();
     }
 
-//    public void delete(final Person person) {
-//        entityManager.remove(person);
-//    }
-
     public void delete(final Person person) {
         Query query = entityManager.createNativeQuery("DELETE FROM person p WHERE p.id = :id");
         query.setParameter("id", person.getId());
         query.executeUpdate();
     }
-
-//    public void save(final Person person) {
-//        entityManager.persist(person);
-//    }
 
     public void save(final Person person) {
         try {

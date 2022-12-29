@@ -1,8 +1,6 @@
 package com.codede.spring.controller;
 
 import com.codede.spring.DTO.DepartmentDTO;
-import com.codede.spring.DTO.PageDTO;
-import com.codede.spring.DTO.PersonDTO;
 import com.codede.spring.DTO.ResponseDTO;
 import com.codede.spring.entity.Department;
 import com.codede.spring.repo.DepartmentRepo;

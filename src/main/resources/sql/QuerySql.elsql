@@ -1,6 +1,0 @@
-@NAME(SAVE_DEPARTMENT)
-  INSERT INTO department(id, name, location, country)
-    VALUES (:id, :name, :location, :country)
-
-@NAME(FIND_ALL_DEPARTMENT)
-    SELECT * FROM department;
