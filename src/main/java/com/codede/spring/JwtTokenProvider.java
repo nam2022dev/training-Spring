@@ -10,9 +10,7 @@ import java.util.Date;
 @Slf4j
 public class JwtTokenProvider {
     private final String JWT_SECRET = "nguyennam";
-
-    //time co hieu luc cua chuoi jWt
-    private final long JWT_EXPIRATION = 604800000L;
+    private final long JWT_EXPIRATION = 604800000L; //time co hieu luc cua chuoi jWt
 
     // Tạo ra jwt từ thông tin user
     public String generateToken(CustomUserDetail userDetails) {
