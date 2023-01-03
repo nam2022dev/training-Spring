@@ -1,5 +1,7 @@
 package com.codede.spring;
 
+import com.codede.spring.entity.Login;
+import com.codede.spring.repo.LoginRepo;
 import com.codede.spring.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     LoginService loginService;
 
+    @Autowired
+    LoginRepo loginRepo;
+
     private final JwtAuthenticationFilter authenticationFilter;
     //private final AuthenticationFilter
 
@@ -47,10 +52,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //    }
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
+        Login login = loginRepo.findById(1);
         PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        UserDetails user = User.withUsername("nam")
-                .password(encoder.encode("nam"))
-                .roles("USER")
+        UserDetails user = User.withUsername(login.getUserName())
+                .password(login.getPassword())
+                .roles("USER_ROLE")
                 .build();
         return new InMemoryUserDetailsManager(user);
     }
@@ -70,7 +76,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 //                .authorizeRequests()
 //                .antMatchers("/api/login").permitAll() // Cho phép tất cả mọi người truy cập vào địa chỉ này
 //                .anyRequest().authenticated(); // Tất cả các request khác đều cần phải xác thực mới được truy cập
-        http.csrf().disable().authorizeRequests().antMatchers("/api/*").permitAll();
+        http
+                .csrf()
+                .disable()
+                .authorizeRequests()
+
+                .antMatchers("/api/login").permitAll()
+                .anyRequest().authenticated();
 
         // Thêm một lớp Filter kiểm tra jwt
         http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
